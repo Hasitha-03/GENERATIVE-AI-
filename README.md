@@ -68,5 +68,83 @@ ChatGPT: Focused on conversational generation; uses supervised learning + RLHF (
 Caution: Can generate plausible but inaccurate information (hallucinations) and may reflect biases from training data.
 
 
+**Tokenization & Data Loading**
+1. Tokenization
+Definition: The process of breaking down text (a sentence or document) into smaller pieces called tokens (words, characters, or subwords).
+Tokenizer: The program/tool that performs tokenization (e.g., NLTK, spaCy).
+Purpose: Helps models understand text better by converting it into a format suitable for processing
 
+**Tokenization Methods**
+1. Word-based Tokenization:
+Text is split into individual words.
+Advantage: Preserves semantic meaning.
+Disadvantage: Large vocabulary size (e.g., "unicorn" and "unicorns" are different tokens), out-of-vocabulary (OOV) issues.
+Examples: NLTK, spaCy tokenizers.
+2. Character-based Tokenization:
+Text is split into individual characters.
+Advantage: Small vocabulary, handles OOV words.
+Disadvantage: Single characters may not convey full meaning, increases input dimensionality and computational needs.
+3. Subword-based Tokenization:
+Combines advantages of word and character-based.
+Frequently used words remain unsplit; infrequent words are broken into meaningful subwords.
+
+Algorithms:
+WordPiece: Evaluates benefits of splitting/merging symbols (used by BERT). ## prefix indicates attachment to the previous word.
+Unigram: Starts with many possibilities, narrows down based on frequency.
+SentencePiece: Segments text and assigns unique IDs (used by XLNet). _ prefix indicates a new word preceded by a space.
+
+**Tokenization and Indexing in PyTorch (torchtext)**
+Process:
+Use get_tokenizer to tokenize text.
+Use build_vocab_from_iterator to create a vocabulary from tokens.
+Each unique token in the vocabulary gets a unique integer index.
+vocab.get_stoi(): Returns a dictionary mapping words to their numerical indices.
+vocab.set_default_index(vocab['<UNK>']): Sets a default index for unknown (OOV) words.
+yield_tokens function: Often used to process data iterators and yield tokenized output.
+
+
+Special Tokens & Padding
+Special Tokens:
+<UNK>: Unknown token.
+<BOS> or <s>: Beginning of a sentence.
+<EOS> or </s>: End of a sentence.
+<PAD>: Padding token.
+Padding:
+Process of adding <PAD> tokens to sequences in a batch to make them all the same length (required by many models).
+PyTorch: pad_sequence function.
+padding_value: Value to use for padding (often index of <PAD>).
+batch_first=True: Ensures batch dimension is the first dimension of the output tensor (e.g., [batch_size, sequence_length]). If False (default), it's [sequence_length, batch_size].
+
+
+Data Loaders (PyTorch)
+Purpose: Efficiently load, batch, shuffle, and preprocess data for model training.
+Dataset (torch.utils.data.Dataset):
+Starting point; represents a collection of data samples and labels.
+Custom Dataset Class: Inherits from Dataset and implements:
+__init__(self, data): Initialize with data.
+__len__(self): Return total number of samples.
+__getitem__(self, idx): Retrieve a sample at a given index.
+DataLoader (torch.utils.data.DataLoader):
+An iterator object for loading, shuffling, and batching data from a Dataset.
+Key Parameters:
+dataset: The custom Dataset object.
+batch_size: Number of samples per batch.
+shuffle=True: Randomly shuffles data before each epoch (good for training).
+collate_fn: A function to customize how samples are batched (e.g., tokenization, padding, tensor conversion within the batch).
+Collate Function (collate_fn):
+Processes a list of samples (a batch) from the Dataset.
+Common tasks: Tokenizing, numericalizing (converting tokens to indices), padding sequences to the same length, converting to tensors.
+Allows data transformations to be done efficiently at batch level.
+
+
+**Data Quality **
+Data Quality: Accuracy, consistency, completeness.
+Noise Reduction: Remove irrelevant/repetitive data, typos, tags.
+Consistency Checks: Uniform usage for entities, terms.
+Labeling Quality: Accurate labels for supervised tasks; clear guidelines for annotators.
+
+**Diverse Representation:** Enhances inclusivity, reduces bias.
+Varied Demographics: Text from diverse groups, languages, dialects, cultural norms.
+Balanced Data Sources: News, social media, literature, technical documents.
+Regional/Linguistic Variety: Improves global applicability, translation.
 
